@@ -1,11 +1,21 @@
 FROM node:alpine
 
+# 앱 디렉토리 생성
 WORKDIR /usr/src/app
 
-COPY ./package.json .
+# 윈도우에서 도커를 통해 리액트 앱을 실행 시 핫 로딩 에러 문제 해결
+ENV CHOKIDAR_USEPOLLING=true
+
+# 앱 의존성 설치
+# 가능한 경우 package.json과 package-lock.json을 모두 복사하기 위하 와일드 카드 사용
+COPY ./package*.json ./
 
 RUN npm install
 
+# 앱 소스 추가
 COPY ./ ./
 
-CMD ["npm", "start"]
+# 앱이 3000 포트에 바인딩 되어 있으므로 docker 데몬에 매핑
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]
